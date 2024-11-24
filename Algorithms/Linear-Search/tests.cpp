@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <vector>
 #include <stdexcept>
@@ -9,9 +10,9 @@ const std::string RED = "\033[31m";
 const std::string RESET = "\033[0m";
 
 // Helper function to run a test
-void test_linear_search(std::vector<int>& vec, int target, int expected_value, bool should_throw = false) {
+void test_linear_search(const std::vector<int>& vec, int target, int expected_value, bool should_throw = false) {
     try {
-        int& result = linear_search(vec, target);
+        int result = linear_search(vec, target);
         if (result == expected_value) {
             std::cout << GREEN << "Test passed!" << RESET << std::endl;
         } else {
@@ -38,7 +39,7 @@ int main() {
     std::vector<int> test2 = {1, 3, 5, 7, 9, 11};
     int target2 = 4;
     std::cout << "Running Test 2: Search for 4 (should throw exception)" << std::endl;
-    test_linear_search(test2, target2, 0, true);  // Expect an exception, hence 'should_throw' is true
+    test_linear_search(test2, target2, 0, true);  // Expect an exception
 
     // Test 3: Search in an empty vector
     std::vector<int> test3 = {};
@@ -75,3 +76,4 @@ int main() {
 
     return 0;
 }
+

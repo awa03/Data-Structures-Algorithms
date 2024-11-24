@@ -4,8 +4,8 @@
 #include <iostream>
 
 template<typename T>
-inline T& linear_search(std::vector<T> v, T target){
-  for(auto& e : v){
+inline const T& linear_search(std::vector<T> v, T target){
+  for(const auto& e : v){
     if(e == target){
       return e;
     }
