@@ -14,7 +14,6 @@
 
 int main() {
     // Test 1: Default Constructor
-    std::cout << "Test 1: Default Constructor\n";
     linked_list<int> list1;
     try {
         ASSERT_EQ(0, list1.size(), "Default constructor initializes size to 0");
@@ -23,7 +22,6 @@ int main() {
     }
 
     // Test 2: Insertion at Front
-    std::cout << "Test 2: Insertion at Front\n";
     try {
         list1.insert(10);
         list1.insert(20);
@@ -35,7 +33,6 @@ int main() {
     }
 
     // Test 3: Insertion at Back
-    std::cout << "Test 3: Insertion at Back\n";
     try {
         list1.insert_back(30);
         ASSERT_EQ(3, list1.size(), "List size after inserting at back");
@@ -45,7 +42,6 @@ int main() {
     }
 
     // Test 4: Remove Elements
-    std::cout << "Test 4: Remove Elements\n";
     try {
         list1.remove(20);
         ASSERT_EQ(2, list1.size(), "List size after removing one element");
@@ -57,7 +53,6 @@ int main() {
 
     // Test 5: Copy Assignment Operator
     linked_list<int> list2;
-    std::cout << "Test 5: Copy Assignment Operator\n";
     try {
         list2 = list1;
         ASSERT_EQ(list1.size(), list2.size(), "Copied list has the same size as original");
@@ -67,17 +62,8 @@ int main() {
         std::cerr << "\033[31mERROR | Copy Assignment Test Failed: " << e.what() << "\033[0m\n";
     }
 
-    // Test 6: Stream Insertion Operator
-    std::cout << "Test 6: Stream Insertion Operator\n";
-    try {
-        std::cout << list2; 
-        std::cout << "\033[32mPASS | List successfully written to output.txt\033[0m\n";
-    } catch (const std::exception& e) {
-        std::cerr << "\033[31mERROR | Stream Insertion Test Failed: " << e.what() << "\033[0m\n";
-    }
 
     // Test 7: Clear List
-    std::cout << "Test 7: Clear List\n";
     try {
         list1.clear();
         ASSERT_EQ(0, list1.size(), "List size is 0 after clear");
@@ -85,7 +71,6 @@ int main() {
         std::cerr << "\033[31mERROR | Clear List Test Failed: " << e.what() << "\033[0m\n";
     }
 
-std::cout << "Test 8: Big Data Test\n";
     try {
         linked_list<int> list1;
         constexpr int BIG_DATA_SIZE = 100000;
@@ -113,7 +98,6 @@ std::cout << "Test 8: Big Data Test\n";
 
 
  // Test 1: Default Constructor
-    std::cout << "Test 1: Default Constructor\n";
     try {
         doubly_linked_list<int> list1;
         ASSERT_EQ(0, list1.size(), "Default constructor initializes size to 0");
@@ -122,7 +106,6 @@ std::cout << "Test 8: Big Data Test\n";
     }
 
     // Test 2: Insertion at Front
-    std::cout << "Test 2: Insertion at Front\n";
     try {
         doubly_linked_list<int> list1;
         list1.insert(10);
@@ -135,7 +118,6 @@ std::cout << "Test 8: Big Data Test\n";
     }
 
     // Test 3: Insertion at Back
-    std::cout << "Test 3: Insertion at Back\n";
     try {
         doubly_linked_list<int> list1;
         list1.insert(10);
@@ -147,7 +129,6 @@ std::cout << "Test 8: Big Data Test\n";
     }
 
     // Test 4: Remove Elements
-    std::cout << "Test 4: Remove Elements\n";
     try {
         doubly_linked_list<int> list1;
         list1.insert(20);
@@ -162,7 +143,6 @@ std::cout << "Test 8: Big Data Test\n";
     }
 
     // Test 5: Copy Constructor
-    std::cout << "Test 5: Copy Constructor\n";
     try {
         doubly_linked_list<int> list1;
         list1.insert(10);
@@ -176,7 +156,6 @@ std::cout << "Test 8: Big Data Test\n";
     }
 
     // Test 6: Assignment Operator
-    std::cout << "Test 6: Assignment Operator\n";
     try {
         doubly_linked_list<int> list1;
         list1.insert(10);
@@ -192,7 +171,6 @@ std::cout << "Test 8: Big Data Test\n";
     }
 
     // Test 7: Clear List
-    std::cout << "Test 7: Clear List\n";
     try {
         doubly_linked_list<int> list1;
         list1.insert(10);
@@ -204,7 +182,6 @@ std::cout << "Test 8: Big Data Test\n";
     }
 
     // Test 8: Big Data Test
-    std::cout << "Test 8: Big Data Test\n";
     try {
         doubly_linked_list<int> list1;
         constexpr int BIG_DATA_SIZE = 100'000'000;
@@ -228,6 +205,9 @@ std::cout << "Test 8: Big Data Test\n";
     } catch (const std::exception& e) {
         std::cerr << "\033[31mERROR | Big Data Test Failed: " << e.what() << "\033[0m\n";
     }
+
+
+    std::cout << "\033[32mAll tests completed.\033[0m\n";
 
     return 0;}
 

@@ -46,8 +46,16 @@ public:
     }
 
     Stack& operator=(const Stack& v) {
-        if (this != &v) {  
+        if (this != &v) {
             arr = v.arr;
+        }
+        return *this;
+    }
+
+    Stack& operator=(Stack&& v) noexcept {
+        if (this != &v) {
+            arr = std::move(v.arr);
+            v.arr.clear();
         }
         return *this;
     }
@@ -62,4 +70,3 @@ public:
 private:
     std::vector<T> arr;
 };
-

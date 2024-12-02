@@ -2,6 +2,7 @@
 #define LINEAR_SEARCH_HPP
 
 #include <iostream>
+#include <vector>
 
 template<typename T>
 inline const T& linear_search(std::vector<T> v, T target){

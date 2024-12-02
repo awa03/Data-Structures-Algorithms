@@ -1,80 +1,138 @@
+
+#include "binary-search.hpp"
 #include <iostream>
 #include <vector>
 #include <stdexcept>
-#include <cassert>
-#include "binary-search.hpp"
+#include <chrono>
 
-const std::string GREEN = "\033[32m";
-const std::string RED = "\033[31m";
-const std::string RESET = "\033[0m";
+#define ASSERT_EQ(expected, actual, message) \
+    if ((expected) != (actual)) { \
+        std::cerr << "\033[31mERROR | " << message << ": Expected [" << expected << "], but got [" << actual << "]\033[0m\n"; \
+    } else { \
+        std::cout << "\033[32mPASS | " << message << "\033[0m\n"; \
+    }
 
-// Helper function to run a test
-void test_binary_search(const std::vector<int>& vec, int target, int expected_index) {
+// Test 1: Search for an element that exists in the vector
+void test_search_element_exists() {
+    std::vector<int> test = {1, 3, 5, 7, 9, 11};
     try {
-        int result = binary_search(vec, target);
-        if (result == expected_index) {
-            std::cout << GREEN << "Test passed!" << RESET << std::endl;
-        } else {
-            std::cout << RED << "Test failed! Expected index: " << expected_index << ", Got: " << result << RESET << std::endl;
-        }
+        int result = binary_search<int>(test, 5);
+        ASSERT_EQ(2, result, "Search for 5 in vector [1, 3, 5, 7, 9, 11]");
+    } catch (const std::exception& e) {
+        std::cerr << "\033[31mERROR | SEARCH TEST FAILED: " << e.what() << "\033[0m\n";
+    }
+}
+
+// Test 2: Search for a value that doesn't exist in the vector
+void test_search_element_does_not_exist() {
+    std::vector<int> test = {1, 3, 5, 7, 9, 11};
+    try {
+        int result = binary_search<int>(test, 4);
+        std::cerr << "\033[31mERROR | Expected exception, got result [" << result << "]\033[0m\n";
     } catch (const std::logic_error& e) {
-        if (expected_index == -1) {
-            std::cout << GREEN << "Test passed! Correctly thrown exception: " << e.what() << RESET << std::endl;
-        } else {
-            std::cout << RED << "Test failed! Expected index: " << expected_index << ", Exception: " << e.what() << RESET << std::endl;
-        }
+        std::cout << "\033[32mPASS | " << e.what() << "\033[0m\n";  // Now correctly catches the exception
+    }
+}
+
+// Test 3: Search in an empty vector
+void test_search_empty_vector() {
+    std::vector<int> test = {};
+    try {
+        int result = binary_search<int>(test, 5);
+        std::cerr << "\033[31mERROR | Expected exception, got result [" << result << "]\033[0m\n";
+    } catch (const std::logic_error& e) {
+        std::cout << "\033[32mPASS | " << e.what() << "\033[0m\n";  // Correct exception for empty vector
+    }
+}
+
+// Test 4: Search for a value at the first position in the vector
+void test_search_first_position() {
+    std::vector<int> test = {1, 3, 5, 7, 9, 11};
+    try {
+        int result = binary_search<int>(test, 1);
+        ASSERT_EQ(0, result, "Search for 1 at the beginning of vector [1, 3, 5, 7, 9, 11]");
+    } catch (const std::exception& e) {
+        std::cerr << "\033[31mERROR | SEARCH TEST FAILED: " << e.what() << "\033[0m\n";
+    }
+}
+
+// Test 5: Search for a value at the last position in the vector
+void test_search_last_position() {
+    std::vector<int> test = {1, 3, 5, 7, 9, 11};
+    try {
+        int result = binary_search<int>(test, 11);
+        ASSERT_EQ(5, result, "Search for 11 at the end of vector [1, 3, 5, 7, 9, 11]");
+    } catch (const std::exception& e) {
+        std::cerr << "\033[31mERROR | SEARCH TEST FAILED: " << e.what() << "\033[0m\n";
+    }
+}
+
+// Test 6: Search for a value in a single-element vector (present)
+void test_search_single_element_present() {
+    std::vector<int> test = {10};
+    try {
+        int result = binary_search<int>(test, 10);
+        ASSERT_EQ(0, result, "Search for 10 in single-element vector [10]");
+    } catch (const std::exception& e) {
+        std::cerr << "\033[31mERROR | SEARCH TEST FAILED: " << e.what() << "\033[0m\n";
+    }
+}
+
+// Test 7: Search for a value in a single-element vector (not present)
+void test_search_single_element_not_present() {
+    std::vector<int> test = {10};
+    try {
+        int result = binary_search<int>(test, 5);
+        std::cerr << "\033[31mERROR | Expected exception, got result [" << result << "]\033[0m\n";
+    } catch (const std::logic_error& e) {
+        std::cout << "\033[32mPASS | " << e.what() << "\033[0m\n";  // Correct exception for missing element
+    }
+}
+
+// Test 8: Big Data Search
+void test_big_data_search() {
+    constexpr int BIG_DATA_SIZE = 1000000; // 1 million elements
+    std::vector<int> test;
+    for (int i = 0; i < BIG_DATA_SIZE; ++i) {
+        test.push_back(i);
+    }
+
+    // Search for an element that exists
+    auto start = std::chrono::high_resolution_clock::now();
+    try {
+        int result = binary_search<int>(test, BIG_DATA_SIZE - 1); 
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        std::cout << "\033[32mPASS | Search for element " << BIG_DATA_SIZE - 1 
+                  << " in big data took " << duration << "ms\033[0m\n";
+    } catch (const std::exception& e) {
+        std::cerr << "\033[31mERROR | Big Data Search (Element Found) FAILED: " << e.what() << "\033[0m\n";
+    }
+
+    // Search for an element that doesn't exist
+    start = std::chrono::high_resolution_clock::now();
+    try {
+        int result = binary_search<int>(test, BIG_DATA_SIZE + 1); // Searching for an element that doesn't exist
+        std::cerr << "\033[31mERROR | Expected exception, got result [" << result << "]\033[0m\n";
+    } catch (const std::logic_error& e) {
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        std::cout << "\033[32mPASS | Search for non-existent element took " << duration 
+                  << "ms and correctly threw exception: " << e.what() << "\033[0m\n";
     }
 }
 
 int main() {
-    // Test 1: Search for a value that exists
-    std::vector<int> test1 = {1, 3, 5, 7, 9, 11};
-    int target1 = 5;
-    int expected_index1 = 2;  // The index of 5 in the sorted vector
-    std::cout << "Running Test 1: Search for 5" << std::endl;
-    test_binary_search(test1, target1, expected_index1);
+    test_search_element_exists();
+    test_search_element_does_not_exist();
+    test_search_empty_vector();
+    test_search_first_position();
+    test_search_last_position();
+    test_search_single_element_present();
+    test_search_single_element_not_present();
+    test_big_data_search(); // Run the big data search test
 
-    // Test 2: Search for a value that doesn't exist
-    std::vector<int> test2 = {1, 3, 5, 7, 9, 11};
-    int target2 = 4;
-    int expected_index2 = -1;  // 4 is not in the vector
-    std::cout << "Running Test 2: Search for 4" << std::endl;
-    test_binary_search(test2, target2, expected_index2);
-
-    // Test 3: Search for a value in an empty vector
-    std::vector<int> test3 = {};
-    int target3 = 5;
-    int expected_index3 = -1;  // No element in the vector
-    std::cout << "Running Test 3: Search in empty vector" << std::endl;
-    test_binary_search(test3, target3, expected_index3);
-
-    // Test 4: Search for a value in a single-element vector (present)
-    std::vector<int> test4 = {10};
-    int target4 = 10;
-    int expected_index4 = 0;  // 10 is at index 0
-    std::cout << "Running Test 4: Search for 10 in single-element vector" << std::endl;
-    test_binary_search(test4, target4, expected_index4);
-
-    // Test 5: Search for a value in a single-element vector (not present)
-    std::vector<int> test5 = {10};
-    int target5 = 5;
-    int expected_index5 = -1;  // 5 is not in the vector
-    std::cout << "Running Test 5: Search for 5 in single-element vector" << std::endl;
-    test_binary_search(test5, target5, expected_index5);
-
-    // Test 6: Search for a value at the first position in the vector
-    std::vector<int> test6 = {1, 3, 5, 7, 9, 11};
-    int target6 = 1;
-    int expected_index6 = 0;  // 1 is at the first position
-    std::cout << "Running Test 6: Search for 1 at the beginning" << std::endl;
-    test_binary_search(test6, target6, expected_index6);
-
-    // Test 7: Search for a value at the last position in the vector
-    std::vector<int> test7 = {1, 3, 5, 7, 9, 11};
-    int target7 = 11;
-    int expected_index7 = 5;  // 11 is at the last position
-    std::cout << "Running Test 7: Search for 11 at the end" << std::endl;
-    test_binary_search(test7, target7, expected_index7);
-
+    std::cout << "\033[32mAll tests completed.\033[0m\n";
     return 0;
 }
+

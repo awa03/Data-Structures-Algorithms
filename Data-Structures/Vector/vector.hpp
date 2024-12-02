@@ -16,6 +16,7 @@ public:
     // Initializer-List Constructor
     Vector(std::initializer_list<T> list) : arr(nullptr), _size(0), _capacity(0) {
         resize(list.size());
+        _size = list.size();
         int index = 0;
         for (const auto& elem : list) {
             arr[index++] = elem;
@@ -44,43 +45,45 @@ public:
         if (_size >= _capacity) {
             resize((_capacity == 0) ? 1 : _capacity * 2);
         }
-        arr[_size++] = element;
+        arr[_size] = element;  // Place the element at the correct position
+        _size++;               // Increment size
     }
 
-    void push_front(const T& element){
-      T** tmp[_capacity+1];
-      int i =0;
-      tmp[0] = element;
-      for(int i =0; i < _size; i++){
-        tmp[i+1] = arr[i];
-      }
-      delete[] arr;
-      arr = tmp; 
-      _size++;
-      _capacity++;
+    // Add element to the front
+    void push_front(const T& element) {
+        if (_size >= _capacity) {
+            resize((_capacity == 0) ? 1 : _capacity * 2);
+        }
+        // Shift all elements to the right
+        for (int i = _size; i > 0; --i) {
+            arr[i] = arr[i - 1];
+        }
+        arr[0] = element;  // Place the new element at the front
+        ++_size;
     }
 
+    // Remove element from the back
     void pop_back() {
         if (_size > 0) {
             --_size;
         }
     }
 
-    void pop_front(){
-      if(_size == 0){return;}
-      T** tmp[_capacity];
-
-      for(int i =0; i < _size; i++){
-        tmp[i-1] = tmp[i];
-      }
-      delete[] arr;
-      arr = tmp; 
-      _size--;
+    // Remove element from the front
+    void pop_front() {
+        if (_size == 0) return;  // Don't pop if the vector is empty
+        for (int i = 1; i < _size; ++i) {
+            arr[i - 1] = arr[i];  // Shift elements left
+        }
+        --_size;  // Decrease size after popping the front element
     }
 
     // Clear the vector
     void clear() {
+        delete[] arr;  // Free memory
+        arr = nullptr;  // Set to null after deletion
         _size = 0;
+        _capacity = 0;
     }
 
     bool isEmpty() const {
@@ -96,6 +99,7 @@ public:
         return _capacity;
     }
 
+    // Access element at index (non-const)
     T& operator[](int i) {
         if (i < 0 || i >= _size) {
             throw std::out_of_range("Index Out Of Range");
@@ -103,10 +107,7 @@ public:
         return arr[i];
     }
 
-  void empty(){
-    _size = 0;
-  }
-
+    // Access element at index (const version)
     const T& operator[](int i) const {
         if (i < 0 || i >= _size) {
             throw std::out_of_range("Index Out Of Range");
@@ -114,6 +115,7 @@ public:
         return arr[i];
     }
 
+    // Assignment operator (copy)
     Vector& operator=(const Vector& v) {
         if (this != &v) {
             copy(v);
@@ -121,6 +123,7 @@ public:
         return *this;
     }
 
+    // Assignment operator (move)
     Vector& operator=(Vector&& v) noexcept {
         if (this != &v) {
             delete[] arr;
@@ -160,6 +163,19 @@ public:
         return os;
     }
 
+    // Resize the vector
+    void resize(int new_capacity) {
+        if (new_capacity <= _capacity) return;  // No need to resize
+
+        T* tmp = new T[new_capacity];  // Allocate new memory
+        for (int i = 0; i < _size; ++i) {
+            tmp[i] = arr[i];  // Copy elements
+        }
+        delete[] arr;  // Free old memory
+        arr = tmp;      // Point to new memory
+        _capacity = new_capacity;  // Update capacity
+    }
+
 private:
     T* arr;
     int _size;
@@ -167,26 +183,13 @@ private:
 
     // Copy elements from another vector
     void copy(const Vector& v) {
-        delete[] arr;
+        delete[] arr;  // Free current memory
         _capacity = v._capacity;
         _size = v._size;
-        arr = new T[_capacity];
+        arr = new T[_capacity];  // Allocate new memory
         for (int i = 0; i < _size; ++i) {
-            arr[i] = v.arr[i];
+            arr[i] = v.arr[i];  // Copy elements
         }
-    }
-
-    // Resize vector
-    void resize(int new_capacity) {
-        if (new_capacity <= _capacity) return;
-
-        T* tmp = new T[new_capacity];
-        for (int i = 0; i < _size; ++i) {
-            tmp[i] = arr[i];
-        }
-        delete[] arr;
-        arr = tmp;
-        _capacity = new_capacity;
     }
 };
 

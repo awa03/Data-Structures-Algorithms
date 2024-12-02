@@ -1,119 +1,123 @@
 
 #include "vector.hpp"
-#include <stdexcept>
 #include <iostream>
+#include <chrono>
+#include <stdexcept>
 
-int main() {
-    // Test 1: Default Constructor
-    std::cout << "\033[32mTest 1: Vector Created Using Default Constructor\033[0m\n";
-    Vector<int> test1;
+#define ASSERT_EQ(expected, actual, message) \
+    if ((expected) != (actual)) { \
+        std::cerr << "\033[31mERROR | " << message << ": Expected [" << expected << "], but got [" << actual << "]\033[0m\n"; \
+    } else { \
+        std::cout << "\033[32mPASS | " << message << "\033[0m\n"; \
+    }
+
+// Test 1: Default Constructor and Insertion
+void test_default_constructor_and_insertion() {
+    Vector<int> test;
     try {
-        std::cout << "Inserting 1\n";
-        test1.push_back(1);
-        std::cout << test1 << "\n";
+        test.push_back(1);
+        ASSERT_EQ(1, test[0], "First element should be 1");
+        
+        test.push_back(2);
+        ASSERT_EQ(2, test[1], "Second element should be 2");
 
-        std::cout << "Inserting 2\n";
-        test1.push_back(2);
-        std::cout << test1 << "\n";
-
-        std::cout << "Inserting 3\n";
-        test1.push_back(3);
-        std::cout << test1 << "\n";
+        test.push_back(3);
+        ASSERT_EQ(3, test[2], "Third element should be 3");
     } catch (const std::exception& e) {
         std::cerr << "\033[31mERROR | FAILED INSERTION TEST: " << e.what() << "\033[0m\n";
     }
+}
 
-    // Testing empty functionality
-    std::cout << "\033[32mTesting Empty Functionality\033[0m\n";
+// Test 2: Empty Functionality
+void test_empty_functionality() {
+    Vector<int> test;
     try {
-        test1.clear();
-        std::cout << "Size after clearing: " << test1.size() << "\n";
-
-        if (test1.isEmpty()) {
-            std::cout << "Vector is now empty\n";
-        } else {
-            throw std::logic_error("Vector is not empty");
-        }
+        test.push_back(1);
+        test.clear();
+        ASSERT_EQ(0, test.size(), "Size after clear should be 0");
+        ASSERT_EQ(true, test.isEmpty(), "Vector should be empty after clearing");
     } catch (const std::exception& e) {
         std::cerr << "\033[31mERROR | FAILED EMPTY TEST: " << e.what() << "\033[0m\n";
     }
+}
 
-    // Test 2: Initializer List Constructor
-    std::cout << "\033[32mTest 2: Vector Created Using Initializer List\033[0m\n";
-    Vector<int> test2({1, 2, 3, 4, 3, 1, 3, 4, 5, 6, 6, 9, 1, 3, 4});
+// Test 3: Initializer List Constructor
+void test_initializer_list_constructor() {
+    Vector<int> test1({1, 2, 3, 4, 5});
     try {
-        std::cout << "Vector contents: " << test2 << "\n";
+        ASSERT_EQ(5, test1.size(), "Size of vector should be 5");
+        ASSERT_EQ(3, test1[2], "Third element should be 3");
+    } catch (const std::exception& e) {
+        std::cerr << "\033[31mERROR | FAILED INITIALIZER LIST TEST: " << e.what() << "\033[0m\n";
+    }
+}
 
-        test1 = test2; // Copy assignment
-        std::cout << "Copied contents to test1: " << test1 << "\n";
-
-        if (test1 == test2) {
-            std::cout << "Vectors are equal\n";
-        } else {
-            throw std::logic_error("Vectors are not equal");
-        }
+// Test 4: Copy Assignment and Comparison
+void test_copy_assignment_and_comparison() {
+    Vector<int> test1({1, 2, 3, 4, 5});
+    Vector<int> test3;
+    try {
+        test3 = test1;
+        ASSERT_EQ(true, (test1 == test3), "Vectors should be equal after copy assignment");
     } catch (const std::exception& e) {
         std::cerr << "\033[31mERROR | FAILED COPY/COMPARE TEST: " << e.what() << "\033[0m\n";
     }
+}
 
-    // Test 3: Large Data Handling
-    std::cout << "\033[32mTest 3: Large Data Handling\033[0m\n";
-    Vector<int> test3;
+// Test 5: Large Data Handling
+void test_large_data_handling() {
+    Vector<int> test;
     try {
-        // Insert 1,000,000 elements
         for (int i = 0; i < 1'000'000; ++i) {
-            test3.push_back(i);
+            test.push_back(i);
         }
-        std::cout << "Inserted 1,000,000 elements\n";
+        ASSERT_EQ(1'000'000, test.size(), "Size should be 1,000,000 after insertion");
 
-        // Modify elements
         for (int i = 0; i < 100'000; ++i) {
-            test3[i + 1] = test3[i];
+            test[i + 1] = test[i];
         }
-        std::cout << "Modified first 100,000 elements\n";
+        ASSERT_EQ(test[100], test[99], "Modification of elements failed");
 
-        // Pop elements
         for (int i = 0; i < 100'000; ++i) {
-            test3.pop_back();
+            test.pop_back();
         }
-        std::cout << "Popped 100,000 elements\n";
-
-        // Reference and move testing
-        auto& test4 = test3;
-        auto&& test5 = std::move(test3);
-
-        test4.clear();
-        test5.clear();
-
-        if (test4.isEmpty() && test5.isEmpty()) {
-            std::cout << "Vectors emptied successfully\n";
-        } else {
-            throw std::logic_error("Vectors not empty after clearing");
-        }
+        ASSERT_EQ(900'000, test.size(), "Size should be 900,000 after popping 100,000 elements");
     } catch (const std::exception& e) {
-        std::cerr << "\033[31mERROR | FAILED MASS DATA TEST: " << e.what() << "\033[0m\n";
+        std::cerr << "\033[31mERROR | FAILED LARGE DATA TEST: " << e.what() << "\033[0m\n";
     }
+}
 
-    // Test 4: Exception Handling for Out-of-Range Access
-    std::cout << "\033[32mTest 4: Out-of-Range Access\033[0m\n";
+// Test 6: Out-of-Range Access
+void test_out_of_range_access() {
+    Vector<int> test({1, 2, 3, 4, 5});
     try {
-        std::cout << "Accessing out-of-range index:\n";
-        std::cout << test2[100]; // Should throw exception
+        test[100]; // Should throw exception
     } catch (const std::out_of_range& e) {
-        std::cerr << "\033[33mExpected Error | " << e.what() << "\033[0m\n";
+        std::cout << "\033[33mExpected Error | " << e.what() << "\033[0m\n";
     }
+}
 
-    // Test 5: Resize Handling
-    std::cout << "\033[32mTest 5: Resizing the Vector\033[0m\n";
+// Test 7: Resize Handling
+void test_resize_handling() {
+    Vector<int> test({10, 20, 30});
     try {
-        Vector<int> test5({10, 20, 30});
-        std::cout << "Before resizing: " << test5 << " (capacity: " << test5.capacity() << ")\n";
-        test5.push_back(40);
-        test5.push_back(50);
-        std::cout << "After resizing: " << test5 << " (capacity: " << test5.capacity() << ")\n";
+        test.push_back(40);
+        test.push_back(50);
+        ASSERT_EQ(5, test.size(), "Size should be 5 after pushing 2 elements");
+        ASSERT_EQ(50, test[4], "Last element should be 50 after resizing");
     } catch (const std::exception& e) {
         std::cerr << "\033[31mERROR | FAILED RESIZE TEST: " << e.what() << "\033[0m\n";
     }
+}
+
+int main() {
+    test_default_constructor_and_insertion();
+    test_empty_functionality();
+    test_initializer_list_constructor();
+    test_copy_assignment_and_comparison();
+    test_large_data_handling();
+    test_out_of_range_access();
+    test_resize_handling();
 
     std::cout << "\033[32mAll tests completed.\033[0m\n";
     return 0;
