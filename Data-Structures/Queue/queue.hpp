@@ -1,51 +1,54 @@
+
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
 
+#include <vector>
+#include <stdexcept>
+
 template<typename T>
-class Queue {
-  Queue(){
-    head = nullptr;
-    tail = nullptr;
-    size = 0;
-  }
+class queue {
+public:
+    queue() {}
 
-  void push(T data){
-    if(head == nullptr){
-      head = new Node(data, nullptr, nullptr);
-      tail = head;
+    queue(const queue& other) {
+        q = other.q;
     }
-    else {
-      Node* newHead(data, head, nullptr);
-      head->Prev = newHead;
-      head = newHead;
+
+    queue& operator=(const queue& other) {
+        if (this != &other) {
+            q = other.q;
+        }
+        return *this;
     }
-    size++;
-  }
 
-  void pop(){
-    if(head == nullptr){return;}
-    Node* curr = head;
-    if(curr == tail){
-
+    void push(const T& data) {
+        q.push_back(data);
     }
-    head->Next->Prev = nullptr;
-  }
 
+    void pop() {
+        if (is_empty()) {
+            throw std::out_of_range("Queue is empty, cannot pop.");
+        }
+        q.erase(q.begin());
+    }
 
+    T& front() {
+        if (is_empty()) {
+            throw std::out_of_range("Queue is empty, cannot access front.");
+        }
+        return q.front();
+    }
+
+    bool is_empty() const {
+        return q.empty();
+    }
+
+    size_t size() const {
+        return q.size();
+    }
 
 private:
-  struct Node{
-    Node* Next;
-    Node* Prev;
-    T data;
-    Node(T newdata): data(newdata){}
-    Node(T newdata, Node* newnext, Node* newprev) 
-    : data(newdata), Next(newnext), Prev(newprev){}
-  };
-
-  Node* head;
-  Node* tail;
-  int size;
+    std::vector<T> q;
 };
 
-#endif
+#endif 
