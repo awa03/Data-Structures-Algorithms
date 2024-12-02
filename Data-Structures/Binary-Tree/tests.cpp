@@ -1,8 +1,18 @@
 #include "binary-tree.hpp"
 #include <iostream>
+#include <chrono>
 #include <stdexcept>
 
 int vector_test();
+
+#define ASSERT_EQ(expected, actual, message) \
+    if ((expected) != (actual)) { \
+        std::cerr << "\033[31mERROR | " << message << ": Expected [" << expected << "], but got [" << actual << "]\033[0m\n"; \
+    } else { \
+        std::cout << "\033[32mPASS | " << message << "\033[0m\n"; \
+    }
+
+
 
 int main() {
     // Test 1: Default Constructor
@@ -115,7 +125,32 @@ int main() {
         std::cerr << "\033[31mERROR | FAILED DESTRUCTOR TEST: " << e.what() << "\033[0m\n";
     }
 
+
+  std::cout << "Test 8: Big Data Test\n";
+    try {
+        Tree<int> list1;
+        constexpr int BIG_DATA_SIZE = 100000;
+        auto start = std::chrono::high_resolution_clock::now();
+
+        for (int i = 0; i < BIG_DATA_SIZE; ++i) {
+            list1.insert(i);
+        }
+
+        auto mid = std::chrono::high_resolution_clock::now();
+
+        auto insert_duration = std::chrono::duration_cast<std::chrono::milliseconds>(mid - start).count();
+
+        std::cout << "\033[32mPASS | Big Data Test: Inserted " << BIG_DATA_SIZE
+                  << " elements in " << insert_duration << "ms\033[0m\n";
+    } catch (const std::exception& e) {
+        std::cerr << "\033[31mERROR | Big Data Test Failed: " << e.what() << "\033[0m\n";
+    }
+
+
+
+
     std::cout << "\033[32mAll tests completed.\033[0m\n";
+
     vector_test();
     return 0;
 }
@@ -246,5 +281,34 @@ int vector_test() {
     }
 
     std::cout << "\033[32mAll tests completed.\033[0m\n";
+
+  std::cout << "Test 9: Big Data Test\n";
+    try {
+        VectorBinaryTree<int> list1;
+        constexpr int BIG_DATA_SIZE = 10000000;
+        auto start = std::chrono::high_resolution_clock::now();
+
+        for (int i = 0; i < BIG_DATA_SIZE; ++i) {
+            list1.insert(i);
+        }
+
+        auto mid = std::chrono::high_resolution_clock::now();
+        list1.clear();
+        auto end = std::chrono::high_resolution_clock::now();
+
+        auto insert_duration = std::chrono::duration_cast<std::chrono::milliseconds>(mid - start).count();
+        auto clear_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - mid).count();
+
+        ASSERT_EQ(0, list1.size(), "List size is 0 after clearing big data test");
+        std::cout << "\033[32mPASS | Big Data Test: Inserted " << BIG_DATA_SIZE
+                  << " elements in " << insert_duration << "ms, cleared in "
+                  << clear_duration << "ms\033[0m\n";
+    } catch (const std::exception& e) {
+        std::cerr << "\033[31mERROR | Big Data Test Failed: " << e.what() << "\033[0m\n";
+    }
+
+
+
+
     return 0;
 }

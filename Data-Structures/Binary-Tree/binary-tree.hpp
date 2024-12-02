@@ -20,6 +20,8 @@ public:
     Tree(const Tree& t) { root = copyNodes(t.root); _size = t._size; _depth = t._depth; }
     ~Tree() { clear(root); }
 
+    int size(){return _size;} 
+
     Tree& operator=(const Tree& t) {
         if (this != &t) {
             clear(root);
