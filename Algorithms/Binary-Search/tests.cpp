@@ -1,6 +1,7 @@
 
 #include "binary-search.hpp"
 #include <iostream>
+#include <random>
 #include <vector>
 #include <stdexcept>
 #include <chrono>
@@ -90,29 +91,39 @@ void test_search_single_element_not_present() {
 }
 
 // Test 8: Big Data Search
+
 void test_big_data_search() {
-    constexpr int BIG_DATA_SIZE = 1000000; // 1 million elements
+    constexpr int BIG_DATA_SIZE = 100000000; // 10 million elements
     std::vector<int> test;
+
+    // Generate a sorted vector with random step values
+    test.reserve(BIG_DATA_SIZE);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> step_dist(1, 112); // Random step sizes to maintain order
+
+    int current = 0;
     for (int i = 0; i < BIG_DATA_SIZE; ++i) {
-        test.push_back(i);
+        current += step_dist(gen);
+        test.push_back(current);
     }
 
-    // Search for an element that exists
+    // Search for an element that exists (last element)
     auto start = std::chrono::high_resolution_clock::now();
     try {
-        int result = binary_search<int>(test, BIG_DATA_SIZE - 1); 
+        int result = binary_search<int>(test, test.back()); // Search for the last element
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        std::cout << "\033[32mPASS | Search for element " << BIG_DATA_SIZE - 1 
+        std::cout << "\033[32mPASS | Search for element " << test.back() 
                   << " in big data took " << duration << "ms\033[0m\n";
     } catch (const std::exception& e) {
         std::cerr << "\033[31mERROR | Big Data Search (Element Found) FAILED: " << e.what() << "\033[0m\n";
     }
 
-    // Search for an element that doesn't exist
+    // Search for an element that doesn't exist (larger than the last element)
     start = std::chrono::high_resolution_clock::now();
     try {
-        int result = binary_search<int>(test, BIG_DATA_SIZE + 1); // Searching for an element that doesn't exist
+        int result = binary_search<int>(test, test.back() + 1); // Non-existent element
         std::cerr << "\033[31mERROR | Expected exception, got result [" << result << "]\033[0m\n";
     } catch (const std::logic_error& e) {
         auto end = std::chrono::high_resolution_clock::now();
